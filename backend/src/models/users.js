@@ -11,8 +11,11 @@ const getUserById = async (id) => {
 };
 
 // buat user baru
-const createUser = async (userData) => {
-  return await supabase.from("users").insert([userData]).select();
+const createUser = async ({ name, email, password }) => {
+  return await supabase
+    .from("users")
+    .insert([{ name, email, password }])
+    .select();
 };
 
 module.exports = {
