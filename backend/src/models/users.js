@@ -6,17 +6,20 @@ const getAllUsers = async () => {
 };
 
 // ambil user berdasarkan id
-const getUserById = async (id) => {
+const getUser = async (id) => {
   return await supabase.from("users").select("*").eq("id", id).single();
 };
 
 // buat user baru
-const createUser = async (userData) => {
-  return await supabase.from("users").insert([userData]).select();
+const createUser = async ({ name, email, password }) => {
+  return await supabase
+    .from("users")
+    .insert([{ name, email, password }])
+    .select();
 };
 
 module.exports = {
   getAllUsers,
-  getUserById,
+  getUser,
   createUser,
 };
