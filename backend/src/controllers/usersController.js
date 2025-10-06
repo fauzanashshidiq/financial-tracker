@@ -1,4 +1,6 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const supabase = require("../config/db");
 const { getAllUsers, getUserById, createUser } = require("../models/users");
 
 // GET /users
@@ -16,7 +18,7 @@ const getUserByIdController = async (req, res) => {
   res.json(data);
 };
 
-// POST /users
+// POST /users (Register)
 const createUserController = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -41,8 +43,42 @@ const createUserController = async (req, res) => {
   }
 };
 
+// POST /users/login
+const loginUserController = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password)
+    return res.status(400).json({ error: "Email dan Password wajib diisi" });
+
+  const { data: user, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("email", email)
+    .single();
+
+  if (error || !user)
+    return res.status(404).json({ error: "User tidak ditemukan" });
+
+  const isValid = await bcrypt.compare(password, user.password);
+  if (!isValid) return res.status(401).json({ error: "Password salah" });
+
+  // 🔑 Buat token JWT
+  const token = jwt.sign(
+    { id: user.id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
+  );
+
+  res.json({
+    message: "Login berhasil",
+    user: { id: user.id, name: user.name, email: user.email },
+    token,
+  });
+};
+
 module.exports = {
   getUsers,
   getUserByIdController,
   createUserController,
+  loginUserController,
 };

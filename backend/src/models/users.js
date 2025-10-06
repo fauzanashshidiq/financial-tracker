@@ -6,7 +6,7 @@ const getAllUsers = async () => {
 };
 
 // ambil user berdasarkan id
-const getUserById = async (id) => {
+const getUser = async (id) => {
   return await supabase.from("users").select("*").eq("id", id).single();
 };
 
@@ -20,6 +20,6 @@ const createUser = async ({ name, email, password }) => {
 
 module.exports = {
   getAllUsers,
-  getUserById,
+  getUser,
   createUser,
 };
