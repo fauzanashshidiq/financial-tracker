@@ -1,8 +1,8 @@
 const {
   getAllCategories,
   getCategoryById,
-  createCategory,
-  deleteCategory,
+  //   createCategory,
+  //   deleteCategory,
 } = require("../models/categories");
 
 // GET /categories
@@ -21,37 +21,37 @@ const getCategoryByIdController = async (req, res) => {
 };
 
 // POST /categories
-const createCategoryController = async (req, res) => {
-  const { name, type } = req.body;
+// const createCategoryController = async (req, res) => {
+//   const { name, type } = req.body;
 
-  if (!name || !type)
-    return res.status(400).json({ error: "Name dan Type wajib diisi" });
+//   if (!name || !type)
+//     return res.status(400).json({ error: "Name dan Type wajib diisi" });
 
-  const validTypes = ["income", "expense"];
-  if (!validTypes.includes(type.toLowerCase()))
-    return res
-      .status(400)
-      .json({ error: "Type harus 'income' atau 'expense'" });
+//   const validTypes = ["income", "expense"];
+//   if (!validTypes.includes(type.toLowerCase()))
+//     return res
+//       .status(400)
+//       .json({ error: "Type harus 'income' atau 'expense'" });
 
-  const { data, error } = await createCategory({
-    name,
-    type: type.toLowerCase(),
-  });
-  if (error) return res.status(400).json({ error: error.message });
-  res.status(201).json({ message: "Kategori berhasil dibuat", data });
-};
+//   const { data, error } = await createCategory({
+//     name,
+//     type: type.toLowerCase(),
+//   });
+//   if (error) return res.status(400).json({ error: error.message });
+//   res.status(201).json({ message: "Kategori berhasil dibuat", data });
+// };
 
 // DELETE /categories/:id
-const deleteCategoryController = async (req, res) => {
-  const { id } = req.params;
-  const { error } = await deleteCategory(id);
-  if (error) return res.status(400).json({ error: error.message });
-  res.json({ message: "Kategori berhasil dihapus" });
-};
+// const deleteCategoryController = async (req, res) => {
+//   const { id } = req.params;
+//   const { error } = await deleteCategory(id);
+//   if (error) return res.status(400).json({ error: error.message });
+//   res.json({ message: "Kategori berhasil dihapus" });
+// };
 
 module.exports = {
   getCategories,
   getCategoryByIdController,
-  createCategoryController,
-  deleteCategoryController,
+  //   createCategoryController,
+  //   deleteCategoryController,
 };
