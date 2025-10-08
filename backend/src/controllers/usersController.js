@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const supabase = require("../config/db");
-const { getAllUsers, getUserById, createUser } = require("../models/users");
+const { getAllUsers, getUser, createUser } = require("../models/users");
 
 // GET /users
 const getUsers = async (req, res) => {
@@ -13,7 +13,7 @@ const getUsers = async (req, res) => {
 // GET /users/:id
 const getUserByIdController = async (req, res) => {
   const { id } = req.params;
-  const { data, error } = await getUserById(id);
+  const { data, error } = await getUser(id);
   if (error) return res.status(400).json({ error: error.message });
   res.json(data);
 };
