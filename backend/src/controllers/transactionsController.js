@@ -5,11 +5,11 @@ const {
   deleteTransactions,
 } = require("../models/transactions");
 
-// GET /transactions/:id
+// GET /transactions/user/:id
 const getTransactionsByUserController = async (req, res) => {
   const { user_id } = req.params;
 
-  const { data, error } = await getTransactionByUser("user_id");
+  const { data, error } = await getTransactionByUser(user_id);
   if (error) return res.status(400).json({ error: error.message });
   res.json(data);
 };

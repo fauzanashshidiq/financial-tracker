@@ -7,7 +7,7 @@ const {
   deleteTransactionsController,
 } = require("../controllers/transactionsController");
 
-router.get("/:id", getTransactionsByUserController);
+router.get("/user/:user_id", getTransactionsByUserController);
 router.post("/", createTransactionsController);
 router.put("/:id", updateTransactionsController);
 router.delete("/:id", deleteTransactionsController);
