@@ -7,7 +7,7 @@ const {
 
 // GET /transactions/user/:id
 const getTransactionsByUserController = async (req, res) => {
-  const { user_id } = req.params;
+  const user_id = req.user.id;
 
   const { data, error } = await getTransactionByUser(user_id);
   if (error) return res.status(400).json({ error: error.message });
@@ -16,7 +16,8 @@ const getTransactionsByUserController = async (req, res) => {
 
 // POST /transactions
 const createTransactionsController = async (req, res) => {
-  const { user_id, category_id, amount, date, type, description } = req.body;
+  const { category_id, amount, date, type, description } = req.body;
+  const user_id = req.user.id;
   if (!user_id || !category_id || !amount || !date || !type) {
     return res.status(400).json({
       error: "user_id, category_id, amount, date, dan type wajib diisi",
