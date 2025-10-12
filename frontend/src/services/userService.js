@@ -7,7 +7,3 @@ export const loginUser = async (email, password) => {
 export const registerUser = async (name, email, password) => {
   return await api.post("/users", { name, email, password });
 };
-
-export const getUserProfile = async () => {
-  return await api.get("/users/profile");
-};
