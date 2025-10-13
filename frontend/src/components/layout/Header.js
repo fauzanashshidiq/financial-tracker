@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { Wallet, X, Menu } from "lucide-react";
 import Button from "../ui/Button";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate("/register");
+  };
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -36,7 +42,9 @@ const Header = () => {
             <Button variant="ghost" className="px-4 py-2">
               Login
             </Button>
-            <Button className="px-4 py-2">Get Started</Button>
+            <Button className="px-4 py-2" onClick={handleGetStarted}>
+              Get Started
+            </Button>
           </div>
 
           <button
@@ -74,7 +82,9 @@ const Header = () => {
             <Button variant="ghost" className="w-full">
               Login
             </Button>
-            <Button className="w-full">Get Started</Button>
+            <Button className="w-full" onClick={handleGetStarted}>
+              Get Started
+            </Button>
           </div>
         )}
       </nav>
