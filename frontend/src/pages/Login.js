@@ -24,7 +24,7 @@ const Login = () => {
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
       alert("Login berhasil!");
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.error || "Login gagal. Coba lagi.");
     }
