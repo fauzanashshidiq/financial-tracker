@@ -11,6 +11,10 @@ const Header = () => {
     navigate("/register");
   };
 
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <nav className="container mx-auto px-6 py-4">
@@ -39,7 +43,7 @@ const Header = () => {
             >
               Pricing
             </a>
-            <Button variant="ghost" className="px-4 py-2">
+            <Button variant="ghost" className="px-4 py-2" onClick={handleLogin}>
               Login
             </Button>
             <Button className="px-4 py-2" onClick={handleGetStarted}>
@@ -79,7 +83,7 @@ const Header = () => {
             >
               Pricing
             </a>
-            <Button variant="ghost" className="w-full">
+            <Button variant="ghost" className="w-full" onClick={handleLogin}>
               Login
             </Button>
             <Button className="w-full" onClick={handleGetStarted}>
