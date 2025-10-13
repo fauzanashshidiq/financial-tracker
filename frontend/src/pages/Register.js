@@ -24,7 +24,7 @@ const Register = () => {
       console.log("Register success:", response.data);
 
       alert("Pendaftaran berhasil! Silakan login.");
-      navigate("/login");
+      navigate("/");
     } catch (err) {
       setError(err.response?.data?.error || "Terjadi kesalahan saat register.");
     }
