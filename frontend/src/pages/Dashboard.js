@@ -29,7 +29,7 @@ const Dashboard = () => {
 
       try {
         const data = await getTransactionsByUser(token);
-        setTransactions(data);
+        setTransactions(Array.isArray(data.data) ? data.data : data);
       } catch (error) {
         console.error("Gagal ambil transaksi:", error);
       } finally {
