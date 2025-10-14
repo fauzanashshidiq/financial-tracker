@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getTransactionsByUser } from "../services/transactionService";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // Cek token dan user saat pertama kali load
   useEffect(() => {
-    // Cek token dan user di localStorage
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
+    console.log("Token dari localStorage:", token);
 
     if (!token || !storedUser) {
       navigate("/login");
@@ -17,20 +21,40 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
+  // Ambil data transaksi setelah user ter-set
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const data = await getTransactionsByUser(token);
+        setTransactions(data);
+      } catch (error) {
+        console.error("Gagal ambil transaksi:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchTransactions();
+    }
+  }, [user]);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
 
-  if (!user) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-600">
         Memuat dashboard...
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
@@ -72,6 +96,34 @@ const Dashboard = () => {
             </h3>
             <p className="text-3xl font-bold mt-2">Rp 0</p>
           </div>
+        </div>
+        <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow">
+          <h2 className="text-2xl font-bold mb-4">Transaksi Saya</h2>
+
+          {transactions.length === 0 ? (
+            <p className="text-gray-500">Belum ada transaksi.</p>
+          ) : (
+            <ul className="divide-y divide-gray-200">
+              {transactions.map((trx) => (
+                <li key={trx.id} className="py-3 flex justify-between">
+                  <div>
+                    <p className="font-semibold">
+                      {trx.description || "(Tanpa deskripsi)"}
+                    </p>
+                    <p className="text-sm text-gray-500">{trx.date}</p>
+                  </div>
+                  <p
+                    className={`font-semibold ${
+                      trx.type === "expense" ? "text-red-500" : "text-green-600"
+                    }`}
+                  >
+                    {trx.type === "expense" ? "-" : "+"} Rp
+                    {trx.amount.toLocaleString()}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </main>
 
