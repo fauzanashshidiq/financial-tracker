@@ -97,6 +97,12 @@ const Dashboard = () => {
             <p className="text-3xl font-bold mt-2">Rp 0</p>
           </div>
         </div>
+        <button
+          onClick={() => navigate("/add-transaction")}
+          className="p-2 bg-cyan-300"
+        >
+          add transactions
+        </button>
         <div className="max-w-3xl mx-auto mt-10 p-6 bg-white rounded-xl shadow">
           <h2 className="text-2xl font-bold mb-4">Transaksi Saya</h2>
 

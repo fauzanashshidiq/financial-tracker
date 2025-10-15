@@ -5,6 +5,7 @@ import LandingPage from "./pages/LandingPage";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import AddTransaction from "./pages/AddTransactions";
 
 function App() {
   return (
@@ -17,6 +18,14 @@ function App() {
         element={
           <PrivateRoute>
             <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/add-transaction"
+        element={
+          <PrivateRoute>
+            <AddTransaction />
           </PrivateRoute>
         }
       />
