@@ -62,7 +62,7 @@ const loginUserController = async (req, res) => {
   const isValid = await bcrypt.compare(password, user.password);
   if (!isValid) return res.status(401).json({ error: "Password salah" });
 
-  // 🔑 Buat token JWT
+  // Buat token JWT
   const token = jwt.sign(
     { id: user.id, email: user.email },
     process.env.JWT_SECRET,

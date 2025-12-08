@@ -5,6 +5,7 @@ const middlewareLogRequest = require("./middleware/log");
 const userRoutes = require("./routes/users");
 const categoryRoutes = require("./routes/categories");
 const transactionsRoutes = require("./routes/transactions");
+const aiRoutes = require("./routes/ai");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +24,7 @@ app.get("/", (req, res) => {
 app.use("/users", userRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/transactions", transactionsRoutes);
+app.use("/api/ai", aiRoutes);
 
 // Jalankan server
 app.listen(PORT, () => {
