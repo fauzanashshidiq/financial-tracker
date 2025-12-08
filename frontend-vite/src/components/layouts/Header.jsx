@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { X, Menu } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -18,7 +20,11 @@ const Header = () => {
           <Button variant="ghost" size="sm">
             Login
           </Button>
-          <Button size="sm" variant="default">
+          <Button
+            size="sm"
+            variant="default"
+            onClick={() => navigate("/register")}
+          >
             Get Started
           </Button>
         </div>
@@ -42,7 +48,12 @@ const Header = () => {
             <Button variant="ghost" size="sm" className="w-full text-left">
               Login
             </Button>
-            <Button size="sm" variant="default" className="w-full text-left">
+            <Button
+              size="sm"
+              variant="default"
+              className="w-full text-left"
+              onClick={() => navigate("/register")}
+            >
               Get Started
             </Button>
           </div>
