@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import LandingPage from "@/pages/LandingPage";
 import RegisterPage from "@/pages/RegisterPage";
 import LoginPage from "@/pages/LoginPage";
+import Dashboard from "@/pages/Dashboard";
+import PrivateRoute from "@/utils/PrivateRoute";
 
 function App() {
   return (
@@ -9,7 +11,7 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/login" element={<LoginPage />} />
-      {/* <Route
+      <Route
         path="/dashboard"
         element={
           <PrivateRoute>
@@ -17,7 +19,7 @@ function App() {
           </PrivateRoute>
         }
       />
-      <Route
+      {/* <Route
         path="/add-transaction"
         element={
           <PrivateRoute>
