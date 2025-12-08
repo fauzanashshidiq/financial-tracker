@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "@/services/authService";
+import { loginUser } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -13,13 +14,9 @@ import {
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -27,36 +24,21 @@ export default function RegisterPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const validatePassword = (password) => {
-    const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    return regex.test(password);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (!validatePassword(formData.password)) {
-      setError(
-        "Password minimal 8 karakter dan harus mengandung huruf dan angka."
-      );
-      return;
-    }
-
     try {
-      const response = await registerUser(formData);
-      console.log("Register success:", response.data);
+      const response = await loginUser(formData);
 
-      // simpan token dan user ke localStorage
+      // simpan token & user
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      // buka alert dialog sukses
+      // buka dialog sukses
       setOpenDialog(true);
     } catch (err) {
-      setError(
-        "Terjadi kesalahan saat register. Email mungkin sudah digunakan."
-      );
+      setError(err.response?.data?.error || "Login gagal. Coba lagi.");
     }
   };
 
@@ -69,7 +51,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
       <div className="w-full max-w-md p-6 shadow-md rounded-xl bg-white dark:bg-gray-800">
         <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800 dark:text-white">
-          Daftar Akun
+          Masuk Akun
         </h2>
 
         {error && (
@@ -80,15 +62,6 @@ export default function RegisterPage() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            type="text"
-            name="name"
-            placeholder="Nama Lengkap"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
           <input
             type="email"
             name="email"
@@ -113,18 +86,18 @@ export default function RegisterPage() {
               Kembali
             </Button>
             <Button type="submit" size="lg" variant="default">
-              Daftar
+              Masuk
             </Button>
           </div>
         </form>
 
         <p className="mt-4 text-sm text-center text-gray-600">
-          Sudah punya akun?{" "}
+          Belum punya akun?{" "}
           <span
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/register")}
             className="text-blue-600 hover:underline cursor-pointer"
           >
-            Login
+            Daftar di sini
           </span>
         </p>
       </div>
@@ -133,10 +106,10 @@ export default function RegisterPage() {
       <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Pendaftaran Berhasil!</AlertDialogTitle>
+            <AlertDialogTitle>Login Berhasil!</AlertDialogTitle>
             <AlertDialogDescription>
-              Selamat! Akun kamu sudah dibuat. Klik tombol di bawah untuk masuk
-              ke dashboard.
+              Selamat datang! Klik tombol di bawah untuk melanjutkan ke
+              dashboard.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -17,7 +17,7 @@ const Header = () => {
 
         {/* Desktop Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" onClick={() => navigate("/login")}>
             Login
           </Button>
           <Button
@@ -45,7 +45,12 @@ const Header = () => {
       {mobileMenuOpen && (
         <div className="md:hidden bg-white dark:bg-gray-900 shadow-md px-6 pb-4">
           <div className="flex flex-col gap-2">
-            <Button variant="ghost" size="sm" className="w-full text-left">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-left"
+              onClick={() => navigate("/login")}
+            >
               Login
             </Button>
             <Button
