@@ -1,16 +1,20 @@
 # Node modules
 node_modules/
 frontend/node_modules/
+frontend-vite/node_modules/
 backend/node_modules/
 
 # Environment files
 .env
 frontend/.env
+frontend-vite/.env
 backend/.env
 
 # Build output
 frontend/build/
 frontend/dist/
+frontend-vite/build/
+frontend-vite/dist/
 backend/dist/
 
 # Logs
