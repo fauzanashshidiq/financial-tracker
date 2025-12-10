@@ -13,7 +13,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import { Toaster } from "sonner"; // <-- tambahkan di sini
+import { Toaster } from "sonner";
 import React from "react";
 
 const breadcrumbLabels = {
@@ -23,6 +23,7 @@ const breadcrumbLabels = {
   edit: "Edit",
   detail: "Detail",
   budget: "Smart Budget Assistant",
+  history: "History",
   profile: "Profile",
 };
 

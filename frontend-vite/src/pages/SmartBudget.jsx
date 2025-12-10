@@ -10,6 +10,10 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { generateBudgetRecommendation } from "@/services/aiService";
 
 export default function SmartBudget() {
   const [budget, setBudget] = useState(100000); // default 100000
@@ -18,6 +22,7 @@ export default function SmartBudget() {
   const [needs, setNeeds] = useState([]); // multi select
   const [currentCustomNeed, setCurrentCustomNeed] = useState("");
   const [aiRecommendation, setAiRecommendation] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const needOptions = ["Makanan", "Transportasi", "Hiburan", "Kesehatan"];
 
@@ -48,19 +53,37 @@ export default function SmartBudget() {
     setCurrentCustomNeed("");
   };
 
-  const handleGenerate = () => {
-    setAiRecommendation(
-      `Rekomendasi untuk ${needs.join(
-        ", "
-      )} selama ${period} dengan budget Rp ${formatNumber(budget)}: ...`
-    );
+  const handleGenerate = async () => {
+    if (!budget || needs.length === 0) {
+      toast.error("Masukkan budget dan pilih minimal 1 kebutuhan!");
+      return;
+    }
+
+    setLoading(true);
+    setAiRecommendation("");
+
+    try {
+      const res = await generateBudgetRecommendation(budget, period, needs);
+      setAiRecommendation(res.data.recommendation);
+    } catch (err) {
+      console.error(err);
+      console.error("Error API:", err.response?.data || err.message);
+      toast.error("Gagal generate rekomendasi AI");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <DashboardLayout>
-      <h1 className="text-3xl font-bold mt-2 mb-8 text-center">
-        Budget Assistant
-      </h1>
+      <div className="flex justify-between items-center mb-6 max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold text-center flex-1">
+          Budget Assistant
+        </h1>
+        <Button size="sm" className="ml-4">
+          History
+        </Button>
+      </div>
 
       <div className="bg-white p-8 rounded-2xl shadow-sm w-full max-w-3xl mx-auto space-y-4 border">
         {/* Budget */}
@@ -94,10 +117,7 @@ export default function SmartBudget() {
         {/* Kebutuhan Multi-select */}
         <div>
           <Label>Kebutuhan</Label>
-          <Select
-            value={""} // dummy karena pakai klik manual
-            onValueChange={handleAddNeed}
-          >
+          <Select value={""} onValueChange={handleAddNeed}>
             <SelectTrigger className="mt-1 w-full">
               <SelectValue placeholder="Pilih kebutuhan" />
             </SelectTrigger>
@@ -142,8 +162,12 @@ export default function SmartBudget() {
         </div>
 
         {/* Generate */}
-        <Button className="mt-4 w-full" onClick={handleGenerate}>
-          Generate
+        <Button
+          className="mt-4 w-full"
+          onClick={handleGenerate}
+          disabled={loading}
+        >
+          {loading ? "Generating..." : "Generate"}
         </Button>
       </div>
 
@@ -151,7 +175,21 @@ export default function SmartBudget() {
       {aiRecommendation && (
         <div className="mt-6 bg-gray-50 p-6 rounded-lg shadow-inner w-full max-w-3xl mx-auto">
           <h2 className="text-xl font-semibold mb-2">Rekomendasi AI</h2>
-          <p>{aiRecommendation}</p>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              p: ({ node, ...props }) => <p className="mb-2" {...props} />,
+              strong: ({ node, ...props }) => (
+                <strong className="font-bold" {...props} />
+              ),
+              ul: ({ node, ...props }) => (
+                <ul className="list-disc pl-5 mb-2" {...props} />
+              ),
+              li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+            }}
+          >
+            {aiRecommendation}
+          </ReactMarkdown>
         </div>
       )}
     </DashboardLayout>
