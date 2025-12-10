@@ -1,7 +1,12 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const supabase = require("../config/db");
-const { getAllUsers, getUser, createUser } = require("../models/users");
+const {
+  getAllUsers,
+  getUser,
+  createUser,
+  updateUser,
+} = require("../models/users");
 
 // GET /users
 const getUsers = async (req, res) => {
@@ -76,9 +81,27 @@ const loginUserController = async (req, res) => {
   });
 };
 
+// PATCH /users/:id (edit profile / dashboard)
+const updateUserController = async (req, res) => {
+  const { id } = req.params;
+  const { name, balance } = req.body;
+
+  if (name === undefined && balance === undefined)
+    return res.status(400).json({ error: "Nama atau balance wajib diisi" });
+
+  try {
+    const { data, error } = await updateUser(id, { name, balance });
+    if (error) throw error;
+    res.json({ message: "User berhasil diperbarui", data });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 module.exports = {
   getUsers,
   getUserByIdController,
   createUserController,
   loginUserController,
+  updateUserController,
 };
