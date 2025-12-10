@@ -83,13 +83,25 @@ export default function TransaksiChart({
 
       <div className="w-full h-80">
         <ResponsiveContainer>
-          <BarChart data={chartData}>
+          <BarChart data={chartData} barCategoryGap="25%" barGap={4}>
             <XAxis dataKey="date" />
             <YAxis />
             <Tooltip />
-            <Legend />
-            <Bar dataKey="penghasilan" name="Penghasilan" fill="#4ade80" />
-            <Bar dataKey="pengeluaran" name="Pengeluaran" fill="#f87171" />
+            <Legend wrapperStyle={{ fontSize: "13px" }} />
+            <Bar
+              dataKey="penghasilan"
+              name="Penghasilan"
+              fill="#4ade80"
+              barSize={20}
+              radius={[5, 5, 0, 0]}
+            />
+            <Bar
+              dataKey="pengeluaran"
+              name="Pengeluaran"
+              fill="#f87171"
+              barSize={20}
+              radius={[5, 5, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
