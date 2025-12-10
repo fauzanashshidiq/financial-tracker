@@ -18,8 +18,22 @@ const createUser = async ({ name, email, password }) => {
     .select();
 };
 
+const updateUser = async (id, { name, balance }) => {
+  const payload = {};
+  if (name !== undefined) payload.name = name;
+  if (balance !== undefined) payload.balance = balance;
+
+  return await supabase
+    .from("users")
+    .update(payload)
+    .eq("id", id)
+    .select()
+    .single();
+};
+
 module.exports = {
   getAllUsers,
   getUser,
   createUser,
+  updateUser,
 };
