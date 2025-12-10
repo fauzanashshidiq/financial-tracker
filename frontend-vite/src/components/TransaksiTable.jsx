@@ -40,20 +40,17 @@ import {
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import {
-  getTransactionsByUser,
-  deleteTransaction,
-} from "@/services/transactionService";
-import { getCategories } from "@/services/categoryService";
+import { deleteTransaction } from "@/services/transactionService";
 
 export default function TransaksiTable({
+  transactions,
+  setTransactions,
+  categories,
   filterType,
   setFilterType,
   search,
   setSearch,
 }) {
-  const [transactions, setTransactions] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -63,20 +60,6 @@ export default function TransaksiTable({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedTransactionIdsToDelete, setSelectedTransactionIdsToDelete] =
     useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const resTrans = await getTransactionsByUser();
-        setTransactions(resTrans.data || []);
-        const resCat = await getCategories();
-        setCategories(resCat.data || []);
-      } catch (err) {
-        console.error("Gagal memuat data:", err);
-      }
-    };
-    fetchData();
-  }, []);
 
   const transactionsWithCategory = useMemo(
     () =>
@@ -229,8 +212,11 @@ export default function TransaksiTable({
       for (const id of selectedTransactionIdsToDelete) {
         await deleteTransaction(id);
       }
-      const resTrans = await getTransactionsByUser();
-      setTransactions(resTrans.data || []);
+      setTransactions(
+        transactions.filter(
+          (t) => !selectedTransactionIdsToDelete.includes(t.id)
+        )
+      );
       setRowSelection({});
       setDeleteDialogOpen(false);
 

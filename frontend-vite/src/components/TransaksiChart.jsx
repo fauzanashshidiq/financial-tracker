@@ -17,23 +17,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { getTransactionsByUser } from "@/services/transactionService";
 
-export default function TransaksiChart({ filterChart, setFilterChart }) {
-  const [transactions, setTransactions] = useState([]);
-
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const res = await getTransactionsByUser();
-        setTransactions(res.data || []);
-      } catch (err) {
-        console.error("Gagal memuat transaksi:", err);
-      }
-    };
-    fetchTransactions();
-  }, []);
-
+export default function TransaksiChart({
+  transactions,
+  filterChart,
+  setFilterChart,
+}) {
   const chartData = useMemo(() => {
     if (!transactions.length) return [];
 

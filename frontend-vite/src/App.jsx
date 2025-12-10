@@ -6,6 +6,7 @@ import Dashboard from "@/pages/Dashboard";
 import PrivateRoute from "@/utils/PrivateRoute";
 import Transaksi from "./pages/Transaksi";
 import TambahTransaksi from "./pages/Tambahtransaksi";
+import SmartBudget from "./pages/SmartBudget";
 
 function App() {
   return (
@@ -34,6 +35,14 @@ function App() {
         element={
           <PrivateRoute>
             <TambahTransaksi />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/budget"
+        element={
+          <PrivateRoute>
+            <SmartBudget />
           </PrivateRoute>
         }
       />
