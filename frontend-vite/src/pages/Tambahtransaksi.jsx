@@ -14,8 +14,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { getCategories } from "@/services/categoryService";
 import { Calender28 } from "@/components/Calender28";
+import { createTransaction } from "@/services/transactionService";
+import { useNavigate } from "react-router-dom";
 
 export default function TambahTransaksi() {
+  const navigate = useNavigate();
   const [type, setType] = useState("");
   const [jumlah, setJumlah] = useState("");
   const [displayJumlah, setDisplayJumlah] = useState("");
@@ -57,6 +60,35 @@ export default function TambahTransaksi() {
   const handleTypeChange = (value) => {
     setType(value);
     setKategori("");
+  };
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const user_id = user?.id;
+
+  const handleSubmit = async () => {
+    if (!type || !jumlah || !kategori || !tanggal) {
+      alert("Semua field wajib diisi!");
+      return;
+    }
+
+    const formattedDate = new Date(tanggal).toISOString().split("T")[0];
+
+    const payload = {
+      user_id,
+      type,
+      amount: Number(jumlah),
+      category_id: kategori,
+      date: formattedDate,
+      description: deskripsi,
+    };
+
+    try {
+      await createTransaction(payload);
+      navigate("/transaksi");
+    } catch (err) {
+      console.error("Gagal menyimpan transaksi:", err.response?.data || err);
+      alert("Gagal menyimpan transaksi");
+    }
   };
 
   return (
@@ -117,7 +149,7 @@ export default function TambahTransaksi() {
                   </SelectItem>
                 ) : (
                   filteredCategories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>
+                    <SelectItem key={cat.id} value={String(cat.id)}>
                       {cat.name}
                     </SelectItem>
                   ))
@@ -147,7 +179,9 @@ export default function TambahTransaksi() {
             <Button variant="outline" className="w-1/2">
               Batal
             </Button>
-            <Button className="w-1/2">Simpan Transaksi</Button>
+            <Button className="w-1/2" onClick={handleSubmit}>
+              Simpan Transaksi
+            </Button>
           </div>
         </div>
       </div>
