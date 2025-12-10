@@ -77,7 +77,14 @@ export default function HistoryPage() {
               value={item.recommendation_id}
             >
               <AccordionTrigger>
-                <span>{new Date(item.created_at).toLocaleString()}</span>
+                <span>
+                  {new Date(item.created_at).toLocaleString("id-ID", {
+                    timeZone: "Asia/Jakarta",
+                    dateStyle: "long",
+                    timeStyle: "short",
+                  })}{" "}
+                  WIB
+                </span>
               </AccordionTrigger>
 
               <AccordionContent className="flex flex-col gap-4">
