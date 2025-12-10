@@ -13,21 +13,25 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
+import React from "react";
 
 const breadcrumbLabels = {
-  "/dashboard": "Dashboard",
-  "/transaksi": "Transaksi",
-  "/budget": "Smart Budget Assistant",
-  "/profile": "Profile",
+  dashboard: "Dashboard",
+  transaksi: "Transaksi",
+  tambah: "Tambah",
+  edit: "Edit",
+  detail: "Detail",
+  budget: "Smart Budget Assistant",
+  profile: "Profile",
 };
 
 export function DashboardLayout({ children }) {
   const saved = localStorage.getItem("sidebar-open");
   const defaultOpen = saved === null ? true : saved === "true";
 
-  const location = useLocation();
-  const path = location.pathname;
-  const title = breadcrumbLabels[path] || "Menu";
+  const { pathname } = useLocation();
+
+  const segments = pathname.split("/").filter(Boolean);
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
@@ -40,10 +44,32 @@ export function DashboardLayout({ children }) {
 
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{title}</BreadcrumbPage>
-                </BreadcrumbItem>
+                {segments.map((segment, index) => {
+                  const path = "/" + segments.slice(0, index + 1).join("/");
+                  const label = breadcrumbLabels[segment] || segment;
+
+                  const isLast = index === segments.length - 1;
+
+                  return (
+                    <React.Fragment key={path}>
+                      <BreadcrumbItem>
+                        {isLast ? (
+                          <BreadcrumbPage className="capitalize">
+                            {label}
+                          </BreadcrumbPage>
+                        ) : (
+                          <BreadcrumbLink asChild>
+                            <Link to={path} className="capitalize">
+                              {label}
+                            </Link>
+                          </BreadcrumbLink>
+                        )}
+                      </BreadcrumbItem>
+
+                      {!isLast && <BreadcrumbSeparator />}
+                    </React.Fragment>
+                  );
+                })}
               </BreadcrumbList>
             </Breadcrumb>
           </div>

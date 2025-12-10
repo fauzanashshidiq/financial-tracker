@@ -5,6 +5,7 @@ import LoginPage from "@/pages/LoginPage";
 import Dashboard from "@/pages/Dashboard";
 import PrivateRoute from "@/utils/PrivateRoute";
 import Transaksi from "./pages/Transaksi";
+import TambahTransaksi from "./pages/Tambahtransaksi";
 
 function App() {
   return (
@@ -25,6 +26,14 @@ function App() {
         element={
           <PrivateRoute>
             <Transaksi />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/transaksi/tambah"
+        element={
+          <PrivateRoute>
+            <TambahTransaksi />
           </PrivateRoute>
         }
       />

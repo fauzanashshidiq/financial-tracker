@@ -43,7 +43,7 @@ function generateDailyData(days) {
 }
 
 export default function Transaksi() {
-  const [filter, setFilter] = useState("All Time");
+  const [filter, setFilter] = useState("Last Month");
 
   const getFilteredData = () => {
     switch (filter) {
