@@ -14,12 +14,14 @@ import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { generateBudgetRecommendation } from "@/services/aiService";
+import { useNavigate } from "react-router-dom";
 
 export default function SmartBudget() {
-  const [budget, setBudget] = useState(100000); // default 100000
-  const [displayBudget, setDisplayBudget] = useState("100.000"); // tampilan
+  const navigate = useNavigate();
+  const [budget, setBudget] = useState(100000);
+  const [displayBudget, setDisplayBudget] = useState("");
   const [period, setPeriod] = useState("harian");
-  const [needs, setNeeds] = useState([]); // multi select
+  const [needs, setNeeds] = useState([]);
   const [currentCustomNeed, setCurrentCustomNeed] = useState("");
   const [aiRecommendation, setAiRecommendation] = useState("");
   const [loading, setLoading] = useState(false);
@@ -80,7 +82,7 @@ export default function SmartBudget() {
         <h1 className="text-3xl font-bold text-center flex-1">
           Budget Assistant
         </h1>
-        <Button size="sm" className="ml-4">
+        <Button size="sm" className="ml-4" onClick={() => navigate("history")}>
           History
         </Button>
       </div>
