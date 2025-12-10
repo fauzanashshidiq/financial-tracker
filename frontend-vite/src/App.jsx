@@ -4,6 +4,7 @@ import RegisterPage from "@/pages/RegisterPage";
 import LoginPage from "@/pages/LoginPage";
 import Dashboard from "@/pages/Dashboard";
 import PrivateRoute from "@/utils/PrivateRoute";
+import Transaksi from "./pages/Transaksi";
 
 function App() {
   return (
@@ -19,14 +20,14 @@ function App() {
           </PrivateRoute>
         }
       />
-      {/* <Route
-        path="/add-transaction"
+      <Route
+        path="/transaksi"
         element={
           <PrivateRoute>
-            <AddTransaction />
+            <Transaksi />
           </PrivateRoute>
         }
-      /> */}
+      />
     </Routes>
   );
 }

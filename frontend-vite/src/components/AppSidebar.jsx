@@ -1,5 +1,7 @@
-import React from "react";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Calendar, Home, Inbox, Search, LogOut } from "lucide-react";
+
 import {
   Sidebar,
   SidebarContent,
@@ -9,19 +11,36 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "./ui/sidebar"; // path ke komponen Sidebar dasar
+  SidebarHeader,
+  SidebarFooter,
+  SidebarRail,
+  useSidebar,
+} from "@/components/ui/sidebar";
 
 const items = [
-  { title: "Home", url: "#", icon: Home },
-  { title: "Inbox", url: "#", icon: Inbox },
-  { title: "Calendar", url: "#", icon: Calendar },
-  { title: "Search", url: "#", icon: Search },
-  { title: "Settings", url: "#", icon: Settings },
+  { title: "Dashboard", url: "/dashboard", icon: Home },
+  { title: "Transaksi", url: "/transaksi", icon: Inbox },
+  { title: "Smart Budget Assistant", url: "/budget", icon: Calendar },
+  { title: "Profile", url: "/profile", icon: Search },
 ];
 
 export function AppSidebar() {
+  const { open } = useSidebar();
+
+  useEffect(() => {
+    localStorage.setItem("sidebar-open", open);
+  }, [open]);
+
   return (
-    <Sidebar className="w-64 bg-white border-r border-gray-200">
+    <Sidebar collapsible="icon">
+      <SidebarHeader
+        className={`px-4 py-4 border-b transition-all ${
+          !open ? "opacity-0 h-0 overflow-hidden" : ""
+        }`}
+      >
+        <h1 className="text-xl font-bold">FinTrack</h1>
+      </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -30,13 +49,10 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a
-                      href={item.url}
-                      className="flex items-center gap-2 p-2 rounded hover:bg-gray-100"
-                    >
-                      <item.icon className="w-5 h-5" />
-                      <span>{item.title}</span>
-                    </a>
+                    <Link to={item.url}>
+                      <item.icon />
+                      {open && <span>{item.title}</span>}
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -44,6 +60,20 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter className="border-t px-4 py-3">
+        <SidebarMenuButton
+          onClick={() => {
+            localStorage.removeItem("token");
+            window.location.href = "/";
+          }}
+        >
+          <LogOut />
+          {open && <span>Logout</span>}
+        </SidebarMenuButton>
+      </SidebarFooter>
+
+      <SidebarRail />
     </Sidebar>
   );
 }
