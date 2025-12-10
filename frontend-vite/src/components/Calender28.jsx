@@ -26,29 +26,51 @@ function isValidDate(date) {
   return date && !isNaN(date.getTime());
 }
 
-export function Calender28({ onChange }) {
+export function Calender28({ value, onChange }) {
   const [open, setOpen] = React.useState(false);
 
-  // DEFAULT TODAY
-  const today = new Date();
-  const [date, setDate] = React.useState(today);
-  const [month, setMonth] = React.useState(today);
-  const [value, setValue] = React.useState(formatDate(today));
+  const parsedDate = value ? new Date(value) : new Date(); // pakai value dari parent
+  const [date, setDate] = React.useState(parsedDate);
+  const [month, setMonth] = React.useState(parsedDate);
+  const [displayValue, setDisplayValue] = React.useState(
+    value ? formatDate(parsedDate) : formatDate(new Date())
+  );
+
+  React.useEffect(() => {
+    if (value) {
+      const d = new Date(value);
+      if (!isNaN(d.getTime())) {
+        setDate(d);
+        setMonth(d);
+        setDisplayValue(formatDate(d));
+      }
+    }
+  }, [value]);
+
+  const handleSelect = (d) => {
+    setDate(d);
+    setMonth(d);
+    const formatted = formatDate(d);
+    setDisplayValue(formatted);
+    setOpen(false);
+    if (onChange) onChange(formatted); // kirim ke parent
+  };
 
   return (
     <div className="flex flex-col gap-2">
       <div className="relative flex gap-2">
         <Input
           id="date"
-          value={value}
-          placeholder={formatDate(today)}
+          value={displayValue}
+          placeholder={formatDate(new Date())}
           className="bg-background pr-10"
           onChange={(e) => {
+            setDisplayValue(e.target.value);
             const d = new Date(e.target.value);
-            setValue(e.target.value);
             if (isValidDate(d)) {
               setDate(d);
               setMonth(d);
+              if (onChange) onChange(formatDate(d));
             }
           }}
           onKeyDown={(e) => {
@@ -77,12 +99,7 @@ export function Calender28({ onChange }) {
               selected={date}
               month={month}
               onMonthChange={setMonth}
-              onSelect={(d) => {
-                setDate(d);
-                setValue(formatDate(d));
-                setOpen(false);
-                if (onChange) onChange(formatDate(d));
-              }}
+              onSelect={handleSelect}
             />
           </PopoverContent>
         </Popover>

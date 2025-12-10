@@ -13,8 +13,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { getCategories } from "@/services/categoryService";
 import { Calender28 } from "@/components/Calender28";
-import { createTransaction } from "@/services/transactionService";
-import { useNavigate } from "react-router-dom";
+import {
+  createTransaction,
+  updateTransaction,
+} from "@/services/transactionService";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import {
   AlertDialog,
@@ -24,7 +27,7 @@ import {
   AlertDialogTitle,
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 
 export default function TambahTransaksi() {
   const navigate = useNavigate();
@@ -32,12 +35,32 @@ export default function TambahTransaksi() {
   const [jumlah, setJumlah] = useState("");
   const [displayJumlah, setDisplayJumlah] = useState("");
   const [kategori, setKategori] = useState("");
-  const [tanggal, setTanggal] = useState(
-    new Date().toISOString().split("T")[0]
-  ); // default hari ini
   const [deskripsi, setDeskripsi] = useState("");
   const [allCategories, setAllCategories] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const location = useLocation();
+  const editingTransaction = location.state?.transaction;
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  const localToday = `${yyyy}-${mm}-${dd}`;
+  const [tanggal, setTanggal] = useState(
+    editingTransaction ? editingTransaction.date : localToday
+  );
+
+  useEffect(() => {
+    if (editingTransaction) {
+      setType(editingTransaction.type);
+      setJumlah(editingTransaction.amount);
+      setDisplayJumlah(
+        new Intl.NumberFormat("id-ID").format(editingTransaction.amount)
+      );
+      setKategori(String(editingTransaction.category_id));
+      setTanggal(editingTransaction.date);
+      setDeskripsi(editingTransaction.description || "");
+    }
+  }, [editingTransaction]);
 
   const formatNumber = (value) => {
     if (!value) return "";
@@ -93,8 +116,13 @@ export default function TambahTransaksi() {
     };
 
     try {
-      await createTransaction(payload);
-      toast.success("Transaksi berhasil disimpan!");
+      if (editingTransaction) {
+        await updateTransaction(editingTransaction.id, payload);
+        toast.success("Transaksi berhasil diperbarui!");
+      } else {
+        await createTransaction(payload);
+        toast.success("Transaksi berhasil disimpan!");
+      }
       setOpenDialog(false);
       setTimeout(() => navigate("/transaksi"), 1500);
     } catch (err) {
@@ -108,13 +136,13 @@ export default function TambahTransaksi() {
     <DashboardLayout>
       <div className="flex flex-col items-center justify-center w-full">
         <h1 className="text-3xl font-bold mt-2 mb-8 text-center">
-          Tambah Transaksi
+          {editingTransaction ? "Edit Transaksi" : "Tambah Transaksi"}
         </h1>
 
         <div className="border rounded-2xl p-8 bg-white shadow-sm w-full max-w-xl">
           <div className="mb-4">
             <Label>Type</Label>
-            <Select onValueChange={handleTypeChange}>
+            <Select value={type} onValueChange={handleTypeChange}>
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Pilih tipe transaksi" />
               </SelectTrigger>
@@ -167,7 +195,10 @@ export default function TambahTransaksi() {
 
           <div className="mb-4">
             <Label className="mb-2 block">Tanggal</Label>
-            <Calender28 onChange={(dateStr) => setTanggal(dateStr)} />
+            <Calender28
+              value={tanggal}
+              onChange={(dateStr) => setTanggal(dateStr)}
+            />
           </div>
 
           <div className="mb-4">
@@ -193,7 +224,7 @@ export default function TambahTransaksi() {
             <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
               <AlertDialogTrigger asChild>
                 <Button className="w-1/2" onClick={() => setOpenDialog(true)}>
-                  Simpan Transaksi
+                  {editingTransaction ? "Update Transaksi" : "Simpan Transaksi"}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>

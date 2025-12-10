@@ -61,7 +61,9 @@ export default function TransaksiChart({
         <h2 className="font-semibold">Overview Transaksi</h2>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">{filterChart}</Button>
+            <Button size="sm" variant="outline">
+              {filterChart}
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Filter Data</DropdownMenuLabel>

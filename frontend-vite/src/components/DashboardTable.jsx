@@ -69,7 +69,7 @@ export default function DashboardTable({ transactions, categories }) {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">
+            <Button variant="outline" size="sm">
               {filterPeriod === "today"
                 ? "Hari ini"
                 : filterPeriod === "week"
