@@ -16,11 +16,11 @@ import {
 import { PencilIcon } from "lucide-react";
 import DashboardChart from "@/components/DashboardChart";
 import { getCategories } from "@/services/categoryService";
+import DashboardTable from "@/components/DashboardTable";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [transactions, setTransactions] = useState([]);
-  const [filter, setFilter] = useState("today");
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
 
@@ -68,34 +68,6 @@ export default function Dashboard() {
   // Semua transaksi untuk chart & progress
   const allTransactions = transactions;
 
-  // Transaksi yang difilter untuk list
-  const filteredTransactions = transactions.filter((tx) => {
-    if (!tx.created_at) return false;
-
-    const txDate = new Date(tx.created_at.substring(0, 23));
-    if (isNaN(txDate)) return false;
-
-    if (filter === "today") {
-      return (
-        txDate.getDate() === now.getDate() &&
-        txDate.getMonth() === now.getMonth() &&
-        txDate.getFullYear() === now.getFullYear()
-      );
-    } else if (filter === "week") {
-      const firstDayOfWeek = new Date(now);
-      firstDayOfWeek.setDate(now.getDate() - now.getDay());
-      const lastDayOfWeek = new Date(firstDayOfWeek);
-      lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
-      return txDate >= firstDayOfWeek && txDate <= lastDayOfWeek;
-    } else if (filter === "month") {
-      return (
-        txDate.getMonth() === now.getMonth() &&
-        txDate.getFullYear() === now.getFullYear()
-      );
-    }
-    return true;
-  });
-
   // Total income & expense untuk chart/progress
   const totalIncome = allTransactions
     .filter((tx) => tx.type?.toLowerCase() === "income")
@@ -114,8 +86,6 @@ export default function Dashboard() {
     setUser({ ...user, balance: Number(newBalance) });
     setOpenDialog(false);
   };
-  console.log("filteredTransactions", filteredTransactions);
-  console.log("user", user);
 
   return (
     <DashboardLayout>
@@ -181,34 +151,7 @@ export default function Dashboard() {
       <DashboardChart transactions={allTransactions} categories={categories} />
 
       {/* List transaksi */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="font-medium text-lg">Transaksi Saat Ini</h2>
-          <select
-            className="border rounded p-1"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="today">Hari ini</option>
-            <option value="week">Minggu ini</option>
-            <option value="month">Bulan ini</option>
-          </select>
-        </div>
-        <ul>
-          {filteredTransactions.length === 0 && (
-            <p className="text-gray-500">Belum ada transaksi</p>
-          )}
-          {filteredTransactions.map((tx) => (
-            <li
-              key={tx.id}
-              className="flex justify-between border-b py-2 last:border-b-0"
-            >
-              <span>{tx.description || tx.type}</span>
-              <span>Rp {tx.amount.toLocaleString("id-ID")}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <DashboardTable transactions={transactions} categories={categories} />
     </DashboardLayout>
   );
 }

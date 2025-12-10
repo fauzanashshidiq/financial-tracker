@@ -105,12 +105,6 @@ export default function TransaksiTable({
           />
         ),
       },
-      { accessorKey: "category_name", header: "Kategori" },
-      {
-        accessorKey: "description",
-        header: "Deskripsi",
-        cell: ({ row }) => row.getValue("description") || "Tidak ada deskripsi",
-      },
       {
         accessorKey: "date",
         header: ({ column }) => (
@@ -121,6 +115,27 @@ export default function TransaksiTable({
             Tanggal <ArrowUpDown />
           </Button>
         ),
+        cell: ({ row }) => {
+          const dateValue = row.getValue("date");
+          if (!dateValue) return "-";
+          const date = new Date(dateValue);
+          return (
+            <div className="pl-4">
+              {date.toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
+            </div>
+          );
+        },
+      },
+
+      { accessorKey: "category_name", header: "Kategori" },
+      {
+        accessorKey: "description",
+        header: "Deskripsi",
+        cell: ({ row }) => row.getValue("description") || "Tidak ada deskripsi",
       },
       {
         accessorKey: "type",
