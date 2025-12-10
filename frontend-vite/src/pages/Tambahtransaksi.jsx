@@ -176,7 +176,11 @@ export default function TambahTransaksi() {
           </div>
 
           <div className="flex gap-3 mt-4">
-            <Button variant="outline" className="w-1/2">
+            <Button
+              variant="outline"
+              className="w-1/2"
+              onClick={() => navigate("/transaksi")}
+            >
               Batal
             </Button>
             <Button className="w-1/2" onClick={handleSubmit}>
