@@ -7,7 +7,12 @@ import {
   getPaginationRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import {
+  ArrowUpDown,
+  MoreHorizontal,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +31,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getTransactionsByUser } from "@/services/transactionService";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
+import {
+  getTransactionsByUser,
+  deleteTransaction,
+} from "@/services/transactionService";
 import { getCategories } from "@/services/categoryService";
 
 export default function TransaksiTable({
@@ -41,6 +59,11 @@ export default function TransaksiTable({
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
+  const [pageSize, setPageSize] = useState(10);
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedTransactionIdsToDelete, setSelectedTransactionIdsToDelete] =
+    useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,19 +142,37 @@ export default function TransaksiTable({
       },
       {
         accessorKey: "type",
-        header: "Tipe",
-        cell: ({ row }) =>
-          row.getValue("type") === "income" ? "Penghasilan" : "Pengeluaran",
+        header: () => <div className="pl-5">Tipe</div>,
+        cell: ({ row }) => {
+          const type = row.getValue("type");
+          return (
+            <span
+              className={`px-2 py-1 rounded-full text-white text-xs font-medium ${
+                type === "income" ? "bg-green-500" : "bg-red-500"
+              }`}
+            >
+              {type === "income" ? "Penghasilan" : "Pengeluaran"}
+            </span>
+          );
+        },
       },
       {
         accessorKey: "amount",
         header: () => <div className="text-right">Jumlah</div>,
-        cell: ({ row }) => (
-          <div className="text-right font-medium">
-            {row.getValue("type") === "income" ? "+" : "-"}{" "}
-            {new Intl.NumberFormat("id-ID").format(row.getValue("amount"))}
-          </div>
-        ),
+        cell: ({ row }) => {
+          const amount = row.getValue("amount");
+          const type = row.getValue("type");
+          return (
+            <div
+              className={`text-right font-medium ${
+                type === "income" ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {type === "income" ? "+" : "-"} Rp{" "}
+              {new Intl.NumberFormat("id-ID").format(amount)}
+            </div>
+          );
+        },
       },
       {
         id: "actions",
@@ -172,10 +213,47 @@ export default function TransaksiTable({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: { pagination: { pageSize: pageSize, pageIndex: 0 } },
   });
+
+  const handleOpenDeleteDialog = () => {
+    const ids = table
+      .getSelectedRowModel()
+      .flatRows.map((row) => row.original.id);
+    if (!ids.length) return;
+    setSelectedTransactionIdsToDelete(ids);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      for (const id of selectedTransactionIdsToDelete) {
+        await deleteTransaction(id);
+      }
+      const resTrans = await getTransactionsByUser();
+      setTransactions(resTrans.data || []);
+      setRowSelection({});
+      setDeleteDialogOpen(false);
+
+      // Toast sukses
+      toast.success(
+        `${selectedTransactionIdsToDelete.length} transaksi berhasil dihapus.`
+      );
+    } catch (err) {
+      console.error("Gagal menghapus transaksi:", err);
+      setDeleteDialogOpen(false);
+
+      // Toast error
+      toast.error("Terjadi kesalahan saat menghapus transaksi.");
+    }
+  };
 
   return (
     <>
+      {/* Sonner Toast */}
+      <Toaster />
+
+      {/* Search & Filter */}
       <div className="flex items-center gap-4 py-4">
         <Input
           placeholder="Cari kategori atau deskripsi..."
@@ -183,6 +261,7 @@ export default function TransaksiTable({
           onChange={(e) => setSearch(e.target.value)}
           className="flex-1 min-w-0"
         />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
@@ -207,8 +286,42 @@ export default function TransaksiTable({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {table.getSelectedRowModel().flatRows.length > 0 && (
+          <AlertDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+          >
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" onClick={handleOpenDeleteDialog}>
+                Hapus ({table.getSelectedRowModel().flatRows.length})
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+              </AlertDialogHeader>
+              <p>
+                Apakah Anda yakin ingin menghapus{" "}
+                {selectedTransactionIdsToDelete.length} transaksi terpilih?
+              </p>
+              <AlertDialogFooter className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setDeleteDialogOpen(false)}
+                >
+                  Batal
+                </Button>
+                <Button variant="destructive" onClick={handleConfirmDelete}>
+                  Hapus
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </div>
 
+      {/* Table */}
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
@@ -256,6 +369,49 @@ export default function TransaksiTable({
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-end gap-2 py-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.setPageIndex(0)}
+          disabled={!table.getCanPreviousPage()}
+        >
+          <ChevronsLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Prev
+        </Button>
+        <span className="mx-2">
+          Halaman{" "}
+          <strong>
+            {table.getState().pagination.pageIndex + 1} dari{" "}
+            {table.getPageCount()}
+          </strong>
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+          disabled={!table.getCanNextPage()}
+        >
+          <ChevronsRight className="h-4 w-4" />
+        </Button>
       </div>
     </>
   );
