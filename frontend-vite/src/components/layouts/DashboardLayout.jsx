@@ -13,6 +13,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
+import { Toaster } from "sonner"; // <-- tambahkan di sini
 import React from "react";
 
 const breadcrumbLabels = {
@@ -30,24 +31,22 @@ export function DashboardLayout({ children }) {
   const defaultOpen = saved === null ? true : saved === "true";
 
   const { pathname } = useLocation();
-
   const segments = pathname.split("/").filter(Boolean);
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
-
       <SidebarInset>
+        <Toaster richColors position="top-right" />
+
         <header className="flex py-4 items-center gap-2 px-4 border-b bg-white">
           <div className="flex items-center gap-2">
             <SidebarTrigger />
-
             <Breadcrumb>
               <BreadcrumbList>
                 {segments.map((segment, index) => {
                   const path = "/" + segments.slice(0, index + 1).join("/");
                   const label = breadcrumbLabels[segment] || segment;
-
                   const isLast = index === segments.length - 1;
 
                   return (
@@ -65,7 +64,6 @@ export function DashboardLayout({ children }) {
                           </BreadcrumbLink>
                         )}
                       </BreadcrumbItem>
-
                       {!isLast && <BreadcrumbSeparator />}
                     </React.Fragment>
                   );

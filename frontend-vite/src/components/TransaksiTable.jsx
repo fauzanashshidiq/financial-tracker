@@ -40,7 +40,6 @@ import {
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Toaster } from "@/components/ui/sonner";
 import {
   getTransactionsByUser,
   deleteTransaction,
@@ -250,9 +249,6 @@ export default function TransaksiTable({
 
   return (
     <>
-      {/* Sonner Toast */}
-      <Toaster />
-
       {/* Search & Filter */}
       <div className="flex items-center gap-4 py-4">
         <Input

@@ -8,7 +8,6 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -17,15 +16,28 @@ import { Calender28 } from "@/components/Calender28";
 import { createTransaction } from "@/services/transactionService";
 import { useNavigate } from "react-router-dom";
 
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
+import { toast, Toaster } from "sonner";
+
 export default function TambahTransaksi() {
   const navigate = useNavigate();
   const [type, setType] = useState("");
   const [jumlah, setJumlah] = useState("");
   const [displayJumlah, setDisplayJumlah] = useState("");
   const [kategori, setKategori] = useState("");
-  const [tanggal, setTanggal] = useState("");
+  const [tanggal, setTanggal] = useState(
+    new Date().toISOString().split("T")[0]
+  ); // default hari ini
   const [deskripsi, setDeskripsi] = useState("");
   const [allCategories, setAllCategories] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const formatNumber = (value) => {
     if (!value) return "";
@@ -35,12 +47,10 @@ export default function TambahTransaksi() {
   const handleJumlahChange = (e) => {
     const raw = e.target.value.replace(/\./g, "");
     if (!/^\d*$/.test(raw)) return;
-
     setJumlah(raw);
     setDisplayJumlah(formatNumber(raw));
   };
 
-  // Load categories dari backend
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -48,15 +58,14 @@ export default function TambahTransaksi() {
         setAllCategories(res.data);
       } catch (error) {
         console.error("Gagal memuat kategori", error);
+        toast.error("Gagal memuat kategori");
       }
     };
     fetchData();
   }, []);
 
-  // Filter kategori sesuai type
   const filteredCategories = allCategories.filter((cat) => cat.type === type);
 
-  // Reset kategori ketika type berubah
   const handleTypeChange = (value) => {
     setType(value);
     setKategori("");
@@ -65,9 +74,10 @@ export default function TambahTransaksi() {
   const user = JSON.parse(localStorage.getItem("user"));
   const user_id = user?.id;
 
-  const handleSubmit = async () => {
+  const handleConfirmSubmit = async () => {
     if (!type || !jumlah || !kategori || !tanggal) {
-      alert("Semua field wajib diisi!");
+      toast.error("Semua field wajib diisi!");
+      setOpenDialog(false);
       return;
     }
 
@@ -84,24 +94,24 @@ export default function TambahTransaksi() {
 
     try {
       await createTransaction(payload);
-      navigate("/transaksi");
+      toast.success("Transaksi berhasil disimpan!");
+      setOpenDialog(false);
+      setTimeout(() => navigate("/transaksi"), 1500);
     } catch (err) {
       console.error("Gagal menyimpan transaksi:", err.response?.data || err);
-      alert("Gagal menyimpan transaksi");
+      toast.error("Gagal menyimpan transaksi");
+      setOpenDialog(false);
     }
   };
 
   return (
     <DashboardLayout>
       <div className="flex flex-col items-center justify-center w-full">
-        {/* Judul di tengah */}
         <h1 className="text-3xl font-bold mt-2 mb-8 text-center">
           Tambah Transaksi
         </h1>
 
-        {/* CARD FORM */}
         <div className="border rounded-2xl p-8 bg-white shadow-sm w-full max-w-xl">
-          {/* TYPE */}
           <div className="mb-4">
             <Label>Type</Label>
             <Select onValueChange={handleTypeChange}>
@@ -115,7 +125,6 @@ export default function TambahTransaksi() {
             </Select>
           </div>
 
-          {/* JUMLAH */}
           <div className="mb-4">
             <Label>Jumlah</Label>
             <Input
@@ -128,7 +137,6 @@ export default function TambahTransaksi() {
             />
           </div>
 
-          {/* KATEGORI */}
           <div className="mb-4">
             <Label>Kategori</Label>
             <Select
@@ -141,7 +149,6 @@ export default function TambahTransaksi() {
                   placeholder={!type ? "Pilih type dulu" : "Pilih kategori"}
                 />
               </SelectTrigger>
-
               <SelectContent>
                 {filteredCategories.length === 0 ? (
                   <SelectItem value="none" disabled>
@@ -158,13 +165,11 @@ export default function TambahTransaksi() {
             </Select>
           </div>
 
-          {/* TANGGAL (shadcn Calender28) */}
           <div className="mb-4">
             <Label className="mb-2 block">Tanggal</Label>
             <Calender28 onChange={(dateStr) => setTanggal(dateStr)} />
           </div>
 
-          {/* DESKRIPSI */}
           <div className="mb-4">
             <Label>Deskripsi</Label>
             <Textarea
@@ -183,9 +188,30 @@ export default function TambahTransaksi() {
             >
               Batal
             </Button>
-            <Button className="w-1/2" onClick={handleSubmit}>
-              Simpan Transaksi
-            </Button>
+
+            {/* Tombol dengan AlertDialog */}
+            <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+              <AlertDialogTrigger asChild>
+                <Button className="w-1/2" onClick={() => setOpenDialog(true)}>
+                  Simpan Transaksi
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Konfirmasi Simpan</AlertDialogTitle>
+                </AlertDialogHeader>
+                <p>Apakah Anda yakin ingin menyimpan transaksi ini?</p>
+                <AlertDialogFooter className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setOpenDialog(false)}
+                  >
+                    Batal
+                  </Button>
+                  <Button onClick={handleConfirmSubmit}>Simpan</Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </div>
