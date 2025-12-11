@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,15 @@ export default function SmartBudget() {
   const [currentCustomNeed, setCurrentCustomNeed] = useState("");
   const [aiRecommendation, setAiRecommendation] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const needOptions = ["Makanan", "Transportasi", "Hiburan", "Kesehatan"];
 
@@ -77,10 +86,35 @@ export default function SmartBudget() {
     }
   };
 
+  if (pageLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex justify-between items-center mb-6 max-w-3xl mx-auto animate-pulse">
+          <div className="h-8 w-48 bg-gray-200 rounded"></div>
+          <div className="h-8 w-20 bg-gray-200 rounded"></div>
+        </div>
+
+        <div className="bg-white p-8 rounded-2xl shadow-sm w-full max-w-3xl mx-auto border animate-pulse space-y-4">
+          <div className="h-5 w-24 bg-gray-200 rounded"></div>
+          <div className="h-10 w-full bg-gray-200 rounded"></div>
+
+          <div className="h-5 w-24 bg-gray-200 rounded mt-4"></div>
+          <div className="h-10 w-full bg-gray-200 rounded"></div>
+
+          <div className="h-5 w-24 bg-gray-200 rounded mt-4"></div>
+          <div className="h-10 w-full bg-gray-200 rounded"></div>
+          <div className="h-10 w-full bg-gray-200 rounded"></div>
+
+          <div className="h-12 w-full bg-gray-200 rounded mt-4"></div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="flex justify-between items-center mb-6 max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-center flex-1">
+        <h1 className="text-3xl mt-2 mb-3 font-bold flex-1">
           Budget Assistant
         </h1>
         <Button size="sm" className="ml-4" onClick={() => navigate("history")}>

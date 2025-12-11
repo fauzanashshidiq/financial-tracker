@@ -17,6 +17,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { ChartColumnDecreasing } from "lucide-react";
 
 export default function TransaksiChart({
   transactions,
@@ -59,6 +60,7 @@ export default function TransaksiChart({
     <div className="border rounded-lg p-4 bg-white shadow-sm mb-6">
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-semibold">Overview Transaksi</h2>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="sm" variant="outline">
@@ -83,30 +85,41 @@ export default function TransaksiChart({
         </DropdownMenu>
       </div>
 
-      <div className="w-full h-80">
-        <ResponsiveContainer>
-          <BarChart data={chartData} barCategoryGap="25%" barGap={4}>
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Legend wrapperStyle={{ fontSize: "13px" }} />
-            <Bar
-              dataKey="penghasilan"
-              name="Penghasilan"
-              fill="#4ade80"
-              barSize={20}
-              radius={[5, 5, 0, 0]}
-            />
-            <Bar
-              dataKey="pengeluaran"
-              name="Pengeluaran"
-              fill="#f87171"
-              barSize={20}
-              radius={[5, 5, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {chartData.length === 0 ? (
+        <div className="w-full h-80 flex flex-col items-center justify-center text-gray-500">
+          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-4xl">
+            <ChartColumnDecreasing />
+          </div>
+          <p className="text-center">
+            Belum ada data transaksi untuk ditampilkan
+          </p>
+        </div>
+      ) : (
+        <div className="w-full h-80">
+          <ResponsiveContainer>
+            <BarChart data={chartData} barCategoryGap="25%" barGap={4}>
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend wrapperStyle={{ fontSize: "13px" }} />
+              <Bar
+                dataKey="penghasilan"
+                name="Penghasilan"
+                fill="#4ade80"
+                barSize={20}
+                radius={[5, 5, 0, 0]}
+              />
+              <Bar
+                dataKey="pengeluaran"
+                name="Pengeluaran"
+                fill="#f87171"
+                barSize={20}
+                radius={[5, 5, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 }

@@ -16,6 +16,7 @@ export default function Transaksi() {
   const [filterType, setFilterType] = useState("");
   const [search, setSearch] = useState("");
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,11 +30,39 @@ export default function Transaksi() {
         setCategories(resCat.data || []);
       } catch (err) {
         console.error("Gagal memuat data:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-between mb-4 animate-pulse">
+          <div className="h-8 w-40 bg-gray-200 rounded"></div>
+          <div className="h-8 w-32 bg-gray-200 rounded"></div>
+        </div>
+
+        <div className="w-full h-64 bg-gray-200 rounded-xl animate-pulse mb-6"></div>
+
+        <div className="bg-white p-4 rounded-xl border animate-pulse">
+          <div className="flex gap-4 mb-4">
+            <div className="h-10 w-40 bg-gray-200 rounded"></div>
+            <div className="h-10 w-32 bg-gray-200 rounded"></div>
+          </div>
+
+          <div className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-10 w-full bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
