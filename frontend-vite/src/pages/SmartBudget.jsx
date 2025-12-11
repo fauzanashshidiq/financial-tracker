@@ -80,7 +80,7 @@ export default function SmartBudget() {
   return (
     <DashboardLayout>
       <div className="flex justify-between items-center mb-6 max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-center flex-1">
+        <h1 className="text-3xl mt-2 mb-3 font-bold text-center flex-1 pl-20">
           Budget Assistant
         </h1>
         <Button size="sm" className="ml-4" onClick={() => navigate("history")}>
