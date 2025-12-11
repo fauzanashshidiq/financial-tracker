@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "https://financial-tracker-chi-puce.vercel.app/",
   headers: {
     "Content-Type": "application/json",
   },
