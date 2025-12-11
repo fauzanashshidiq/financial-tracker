@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Home, Inbox, Search, LogOut } from "lucide-react";
+import { Home, LogOut, ArrowLeftRight, Bot, User } from "lucide-react";
 
 import {
   Sidebar,
@@ -19,9 +19,9 @@ import {
 
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
-  { title: "Transaksi", url: "/transaksi", icon: Inbox },
-  { title: "Smart Budget Assistant", url: "/budget", icon: Calendar },
-  { title: "Profile", url: "/profile", icon: Search },
+  { title: "Transaksi", url: "/transaksi", icon: ArrowLeftRight },
+  { title: "Smart Budget Assistant", url: "/budget", icon: Bot },
+  { title: "Profile", url: "/profile", icon: User },
 ];
 
 export function AppSidebar() {
@@ -41,7 +41,7 @@ export function AppSidebar() {
         <h1 className="text-xl font-bold">FinTrack</h1>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="mx-2">
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -49,8 +49,13 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link to={item.url}>
-                      <item.icon />
+                    <Link
+                      to={item.url}
+                      className={`flex items-center ${
+                        open ? "gap-2" : "justify-center"
+                      } w-full`}
+                    >
+                      <item.icon className={open ? "" : "mx-auto"} />
                       {open && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>

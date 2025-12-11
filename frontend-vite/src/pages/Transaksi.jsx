@@ -6,6 +6,7 @@ import TransaksiTable from "@/components/TransaksiTable";
 import { useNavigate } from "react-router-dom";
 import { getTransactionsByUser } from "@/services/transactionService";
 import { getCategories } from "@/services/categoryService";
+import { SquarePen } from "lucide-react";
 
 export default function Transaksi() {
   const navigate = useNavigate();
@@ -38,7 +39,12 @@ export default function Transaksi() {
     <DashboardLayout>
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Transaksi</h1>
-        <Button variant="outline" onClick={() => navigate("/transaksi/tambah")}>
+        <Button
+          size="sm"
+          variant="default"
+          onClick={() => navigate("/transaksi/tambah")}
+        >
+          <SquarePen className="w-4 h-4" />
           Tambah Transaksi
         </Button>
       </div>

@@ -8,6 +8,7 @@ import Transaksi from "./pages/Transaksi";
 import TambahTransaksi from "./pages/Tambahtransaksi";
 import SmartBudget from "./pages/SmartBudget";
 import HistortBudget from "./pages/HistoryBudget";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -52,6 +53,14 @@ function App() {
         element={
           <PrivateRoute>
             <HistortBudget />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Profile />
           </PrivateRoute>
         }
       />

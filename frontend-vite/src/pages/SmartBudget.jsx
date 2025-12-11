@@ -15,6 +15,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { generateBudgetRecommendation } from "@/services/aiService";
 import { useNavigate } from "react-router-dom";
+import { History } from "lucide-react";
 
 export default function SmartBudget() {
   const navigate = useNavigate();
@@ -83,6 +84,7 @@ export default function SmartBudget() {
           Budget Assistant
         </h1>
         <Button size="sm" className="ml-4" onClick={() => navigate("history")}>
+          <History />
           History
         </Button>
       </div>

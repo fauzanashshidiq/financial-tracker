@@ -12,6 +12,8 @@ import {
   MoreHorizontal,
   ChevronsLeft,
   ChevronsRight,
+  Trash2,
+  PencilLine,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,7 +35,6 @@ import {
 } from "@/components/ui/table";
 import {
   AlertDialog,
-  AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -41,6 +42,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { deleteTransaction } from "@/services/transactionService";
+import { useNavigate } from "react-router-dom";
 
 export default function TransaksiTable({
   transactions,
@@ -51,6 +53,7 @@ export default function TransaksiTable({
   search,
   setSearch,
 }) {
+  const navigate = useNavigate();
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -105,12 +108,6 @@ export default function TransaksiTable({
           />
         ),
       },
-      { accessorKey: "category_name", header: "Kategori" },
-      {
-        accessorKey: "description",
-        header: "Deskripsi",
-        cell: ({ row }) => row.getValue("description") || "Tidak ada deskripsi",
-      },
       {
         accessorKey: "date",
         header: ({ column }) => (
@@ -121,6 +118,26 @@ export default function TransaksiTable({
             Tanggal <ArrowUpDown />
           </Button>
         ),
+        cell: ({ row }) => {
+          const dateValue = row.getValue("date");
+          if (!dateValue) return "-";
+          const date = new Date(dateValue);
+          return (
+            <div className="pl-4">
+              {date.toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
+            </div>
+          );
+        },
+      },
+      { accessorKey: "category_name", header: "Kategori" },
+      {
+        accessorKey: "description",
+        header: "Deskripsi",
+        cell: ({ row }) => row.getValue("description") || "Tidak ada deskripsi",
       },
       {
         accessorKey: "type",
@@ -169,12 +186,27 @@ export default function TransaksiTable({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Aksi</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(row.original.id)}
+                className="cursor-pointer flex items-center gap-2 text-gray-700"
+                onClick={() =>
+                  navigate("/transaksi/tambah", {
+                    state: { transaction: row.original },
+                  })
+                }
               >
-                Salin ID
+                <PencilLine className="w-4 h-4" />
+                Edit
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Lihat detail</DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer flex items-center gap-2 text-red-600"
+                onClick={() => {
+                  setSelectedTransactionIdsToDelete([row.original.id]);
+                  setDeleteDialogOpen(true);
+                }}
+              >
+                <Trash2 className="w-4 h-4" />
+                Hapus
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ),
@@ -220,15 +252,12 @@ export default function TransaksiTable({
       setRowSelection({});
       setDeleteDialogOpen(false);
 
-      // Toast sukses
       toast.success(
         `${selectedTransactionIdsToDelete.length} transaksi berhasil dihapus.`
       );
     } catch (err) {
       console.error("Gagal menghapus transaksi:", err);
       setDeleteDialogOpen(false);
-
-      // Toast error
       toast.error("Terjadi kesalahan saat menghapus transaksi.");
     }
   };
@@ -241,12 +270,12 @@ export default function TransaksiTable({
           placeholder="Cari kategori atau deskripsi..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 min-w-0"
+          className="flex-1 min-w-0 text-sm placeholder:text-sm h-8"
         />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">
+            <Button variant="outline" size="sm">
               {filterType === "income"
                 ? "Penghasilan"
                 : filterType === "expense"
@@ -269,39 +298,42 @@ export default function TransaksiTable({
           </DropdownMenuContent>
         </DropdownMenu>
 
+        {/* Tombol Hapus Global */}
         {table.getSelectedRowModel().flatRows.length > 0 && (
-          <AlertDialog
-            open={deleteDialogOpen}
-            onOpenChange={setDeleteDialogOpen}
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={handleOpenDeleteDialog}
           >
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" onClick={handleOpenDeleteDialog}>
-                Hapus ({table.getSelectedRowModel().flatRows.length})
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
-              </AlertDialogHeader>
-              <p>
-                Apakah Anda yakin ingin menghapus{" "}
-                {selectedTransactionIdsToDelete.length} transaksi terpilih?
-              </p>
-              <AlertDialogFooter className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setDeleteDialogOpen(false)}
-                >
-                  Batal
-                </Button>
-                <Button variant="destructive" onClick={handleConfirmDelete}>
-                  Hapus
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            <Trash2 className="w-4 h-4" />
+            Hapus ({table.getSelectedRowModel().flatRows.length})
+          </Button>
         )}
       </div>
+
+      {/* AlertDialog (selalu dirender) */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+          </AlertDialogHeader>
+          <p>
+            Apakah Anda yakin ingin menghapus{" "}
+            {selectedTransactionIdsToDelete.length} transaksi terpilih?
+          </p>
+          <AlertDialogFooter className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmDelete}>
+              Hapus
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Table */}
       <div className="overflow-hidden rounded-md border">
@@ -371,7 +403,7 @@ export default function TransaksiTable({
         >
           Prev
         </Button>
-        <span className="mx-2">
+        <span className="mx-2 text-sm">
           Halaman{" "}
           <strong>
             {table.getState().pagination.pageIndex + 1} dari{" "}

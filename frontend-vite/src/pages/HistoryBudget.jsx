@@ -14,6 +14,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { Trash2 } from "lucide-react";
 
 export default function HistoryPage() {
   const [history, setHistory] = useState([]);
@@ -115,6 +116,7 @@ export default function HistoryPage() {
                     variant="destructive"
                     onClick={() => handleDelete(item.recommendation_id)}
                   >
+                    <Trash2 />
                     Hapus
                   </Button>
                 </div>
