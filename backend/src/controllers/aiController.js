@@ -17,7 +17,7 @@ exports.generateBudgetRecommendation = async (req, res) => {
         Buat rekomendasi budgeting yang ringkas, profesional, dan hanya berisi poin penting.
 
         Data pengguna:
-        - Nominal bulanan: Rp ${amount}
+        - Nominal: Rp ${amount}
         - Periode: ${period}
         - Goals: ${goals}
 
@@ -27,7 +27,7 @@ exports.generateBudgetRecommendation = async (req, res) => {
         3. Fokus hanya pada hal-hal yang berhubungan langsung dengan goals.
         4. Formatkan dengan 3 bagian singkat:
         - Analisis (3 kalimat)
-        - Rekomendasi pembagian budget (dalam bullet-point)
+        - Rekomendasi pembagian budget sesuai data pengguna (dalam bullet-point)
         - Tips tambahan spesifik goals (maks 3 poin)
         `;
 
