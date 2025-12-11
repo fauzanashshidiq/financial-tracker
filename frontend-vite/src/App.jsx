@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import LandingPage from "@/pages/LandingPage";
-import RegisterPage from "@/pages/RegisterPage";
-import LoginPage from "@/pages/LoginPage";
-import Dashboard from "@/pages/Dashboard";
+import LandingPage from "./pages/LandingPage";
+import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/LoginPage";
+import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "@/utils/PrivateRoute";
 import Transaksi from "./pages/Transaksi";
 import TambahTransaksi from "./pages/Tambahtransaksi";

@@ -2,11 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "@/services/authService";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
+
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -17,6 +20,7 @@ import {
 export default function LoginPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -31,11 +35,9 @@ export default function LoginPage() {
     try {
       const response = await loginUser(formData);
 
-      // simpan token & user
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      // buka dialog sukses
       setOpenDialog(true);
     } catch (err) {
       setError(err.response?.data?.error || "Login gagal. Coba lagi.");
@@ -62,30 +64,48 @@ export default function LoginPage() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            type="email"
-            name="email"
-            placeholder="Alamat Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Kata Sandi"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+          {/* Email */}
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="email">Alamat Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Alamat Email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <div className="flex justify-between gap-4">
+          {/* Password + Eye Icon */}
+          <div className="flex flex-col gap-1 relative">
+            <Label htmlFor="password">Kata Sandi</Label>
+            <Input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Kata Sandi"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+
+            {/* Toggle icon */}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-7 text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          <div className="flex justify-between gap-4 mt-2">
             <Button size="lg" variant="outline" onClick={() => navigate("/")}>
               Kembali
             </Button>
-            <Button type="submit" size="lg" variant="default">
+            <Button type="submit" size="lg">
               Masuk
             </Button>
           </div>
@@ -102,7 +122,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* Alert Dialog Sukses */}
+      {/* Dialog Sukses Login */}
       <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>

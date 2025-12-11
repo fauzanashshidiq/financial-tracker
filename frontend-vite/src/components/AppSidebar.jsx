@@ -68,13 +68,14 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t px-4 py-3">
         <SidebarMenuButton
+          className="text-red-600 hover:text-red-700 hover:bg-red-100"
           onClick={() => {
             localStorage.removeItem("token");
             window.location.href = "/";
           }}
         >
-          <LogOut />
-          {open && <span>Logout</span>}
+          <LogOut className="text-red-600" />
+          {open && <span className="text-red-600">Logout</span>}
         </SidebarMenuButton>
       </SidebarFooter>
 
