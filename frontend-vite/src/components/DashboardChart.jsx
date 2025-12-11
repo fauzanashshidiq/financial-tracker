@@ -1,3 +1,4 @@
+import { ChartColumnDecreasing, ChartPie } from "lucide-react";
 import React, { useMemo } from "react";
 import {
   PieChart,
@@ -82,97 +83,109 @@ export default function DashboardChart({ transactions, categories }) {
         <p className="text-center font-medium mb-2">
           Penghasilan vs Pengeluaran
         </p>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={[
-                { name: "Pengeluaran", value: totalExpense },
-                { name: "Penghasilan", value: totalIncome },
-              ]}
-              dataKey="value"
-              nameKey="name"
-              outerRadius={80}
-              label={(entry) => `Rp ${entry.value.toLocaleString("id-ID")}`}
-            >
-              <Cell fill="#f87171" />
-              <Cell fill="#4ade80" />
-            </Pie>
-            <Legend
-              verticalAlign="bottom"
-              align="center"
-              layout="horizontal"
-              height={36}
-              wrapperStyle={{ fontSize: "14px", flexWrap: "wrap" }}
-            />
-            <Tooltip
-              formatter={(value) => `Rp ${value.toLocaleString("id-ID")}`}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+
+        {totalIncome === 0 && totalExpense === 0 ? (
+          <div className="w-full h-72 flex flex-col items-center justify-center text-gray-500">
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-3xl mb-3">
+              <ChartColumnDecreasing />
+            </div>
+            <p>Belum ada data transaksi untuk ditampilkan</p>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={[
+                  { name: "Pengeluaran", value: totalExpense },
+                  { name: "Penghasilan", value: totalIncome },
+                ]}
+                dataKey="value"
+                nameKey="name"
+                outerRadius={80}
+                label={(entry) => `Rp ${entry.value.toLocaleString("id-ID")}`}
+              >
+                <Cell fill="#f87171" />
+                <Cell fill="#4ade80" />
+              </Pie>
+              <Legend verticalAlign="bottom" align="center" height={36} />
+              <Tooltip
+                formatter={(value) => `Rp ${value.toLocaleString("id-ID")}`}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        )}
       </div>
 
       {/* Penghasilan per kategori */}
       <div className="bg-white p-4 rounded-lg shadow">
         <p className="text-center font-medium mb-2">Penghasilan per Kategori</p>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={incomeData}
-              dataKey="value"
-              nameKey="name"
-              outerRadius={80}
-              label={({ value }) => `Rp ${value.toLocaleString("id-ID")}`}
-            >
-              {incomeData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={getCategoryColor(index)} />
-              ))}
-            </Pie>
-            <Legend
-              verticalAlign="bottom"
-              align="center"
-              layout="horizontal"
-              height={36}
-              wrapperStyle={{ fontSize: "14px", flexWrap: "wrap" }}
-            />
-            <Tooltip
-              formatter={(value) => `Rp ${value.toLocaleString("id-ID")}`}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+
+        {incomeData.length === 0 ? (
+          <div className="w-full h-72 flex flex-col items-center justify-center text-gray-500">
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-3xl mb-3">
+              <ChartPie />
+            </div>
+            <p>Belum ada data penghasilan untuk ditampilkan</p>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={incomeData}
+                dataKey="value"
+                nameKey="name"
+                outerRadius={80}
+                label={({ value }) => `Rp ${value.toLocaleString("id-ID")}`}
+              >
+                {incomeData.map((entry, index) => (
+                  <Cell key={index} fill={getCategoryColor(index)} />
+                ))}
+              </Pie>
+              <Legend verticalAlign="bottom" align="center" height={36} />
+              <Tooltip
+                formatter={(value) => `Rp ${value.toLocaleString("id-ID")}`}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        )}
       </div>
 
       {/* Pengeluaran per kategori */}
       <div className="bg-white p-4 rounded-lg shadow">
         <p className="text-center font-medium mb-2">Pengeluaran per Kategori</p>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={expenseData}
-              dataKey="value"
-              nameKey="name"
-              outerRadius={80}
-              label={({ value }) => `Rp ${value.toLocaleString("id-ID")}`}
-            >
-              {expenseData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={getCategoryColor(index + incomeData.length)}
-                />
-              ))}
-            </Pie>
 
-            <Legend
-              verticalAlign="bottom"
-              align="center"
-              layout="horizontal"
-              height={36}
-              wrapperStyle={{ fontSize: "14px", flexWrap: "wrap" }}
-            />
-            <Tooltip
-              formatter={(value) => `Rp ${value.toLocaleString("id-ID")}`}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+        {expenseData.length === 0 ? (
+          <div className="w-full h-72 flex flex-col items-center justify-center text-gray-500">
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-3xl mb-3">
+              <ChartPie />
+            </div>
+            <p>Belum ada data pengeluaran untuk ditampilkan</p>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={expenseData}
+                dataKey="value"
+                nameKey="name"
+                outerRadius={80}
+                label={({ value }) => `Rp ${value.toLocaleString("id-ID")}`}
+              >
+                {expenseData.map((entry, index) => (
+                  <Cell
+                    key={index}
+                    fill={getCategoryColor(index + incomeData.length)}
+                  />
+                ))}
+              </Pie>
+
+              <Legend verticalAlign="bottom" align="center" height={36} />
+              <Tooltip
+                formatter={(value) => `Rp ${value.toLocaleString("id-ID")}`}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );

@@ -377,7 +377,7 @@ export default function TransaksiTable({
                   colSpan={columns.length}
                   className="h-24 text-center text-gray-500"
                 >
-                  Tidak ada transaksi.
+                  Belum ada transaksi.
                 </TableCell>
               </TableRow>
             )}
