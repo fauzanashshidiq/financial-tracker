@@ -31,6 +31,8 @@ import { toast } from "sonner";
 
 export default function TambahTransaksi() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
   const [type, setType] = useState("");
   const [jumlah, setJumlah] = useState("");
   const [displayJumlah, setDisplayJumlah] = useState("");
@@ -38,34 +40,49 @@ export default function TambahTransaksi() {
   const [deskripsi, setDeskripsi] = useState("");
   const [allCategories, setAllCategories] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
+
   const location = useLocation();
   const editingTransaction = location.state?.transaction;
+
   const today = new Date();
   const yyyy = today.getFullYear();
   const mm = String(today.getMonth() + 1).padStart(2, "0");
   const dd = String(today.getDate()).padStart(2, "0");
   const localToday = `${yyyy}-${mm}-${dd}`;
+
   const [tanggal, setTanggal] = useState(
     editingTransaction ? editingTransaction.date : localToday
   );
 
   useEffect(() => {
-    if (editingTransaction) {
-      setType(editingTransaction.type);
-      setJumlah(editingTransaction.amount);
-      setDisplayJumlah(
-        new Intl.NumberFormat("id-ID").format(editingTransaction.amount)
-      );
-      setKategori(String(editingTransaction.category_id));
-      setTanggal(editingTransaction.date);
-      setDeskripsi(editingTransaction.description || "");
-    }
+    const fetchData = async () => {
+      try {
+        const res = await getCategories();
+        setAllCategories(res.data);
+
+        if (editingTransaction) {
+          setType(editingTransaction.type);
+          setJumlah(editingTransaction.amount);
+          setDisplayJumlah(
+            new Intl.NumberFormat("id-ID").format(editingTransaction.amount)
+          );
+          setKategori(String(editingTransaction.category_id));
+          setTanggal(editingTransaction.date);
+          setDeskripsi(editingTransaction.description || "");
+        }
+      } catch (error) {
+        console.error("Gagal memuat kategori", error);
+        toast.error("Gagal memuat kategori");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, [editingTransaction]);
 
-  const formatNumber = (value) => {
-    if (!value) return "";
-    return new Intl.NumberFormat("id-ID").format(value);
-  };
+  // Format angka
+  const formatNumber = (value) =>
+    !value ? "" : new Intl.NumberFormat("id-ID").format(value);
 
   const handleJumlahChange = (e) => {
     const raw = e.target.value.replace(/\./g, "");
@@ -73,19 +90,6 @@ export default function TambahTransaksi() {
     setJumlah(raw);
     setDisplayJumlah(formatNumber(raw));
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getCategories();
-        setAllCategories(res.data);
-      } catch (error) {
-        console.error("Gagal memuat kategori", error);
-        toast.error("Gagal memuat kategori");
-      }
-    };
-    fetchData();
-  }, []);
 
   const filteredCategories = allCategories.filter((cat) => cat.type === type);
 
@@ -131,6 +135,32 @@ export default function TambahTransaksi() {
       setOpenDialog(false);
     }
   };
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center w-full">
+          <div className="h-8 w-48 bg-gray-200 rounded animate-pulse mt-2 mb-8"></div>
+
+          <div className="border rounded-2xl p-8 bg-white shadow-sm w-full max-w-xl animate-pulse">
+            <div className="h-6 w-32 bg-gray-200 rounded mb-6"></div>
+            <div className="h-10 w-full bg-gray-200 rounded mb-6"></div>
+            <div className="h-6 w-32 bg-gray-200 rounded mb-6"></div>
+            <div className="h-10 w-full bg-gray-200 rounded mb-6"></div>
+            <div className="h-6 w-32 bg-gray-200 rounded mb-6"></div>
+            <div className="h-10 w-full bg-gray-200 rounded mb-6"></div>
+            <div className="h-6 w-32 bg-gray-200 rounded mb-6"></div>
+            <div className="h-24 w-full bg-gray-200 rounded mb-6"></div>
+
+            <div className="flex gap-3">
+              <div className="h-10 w-1/2 bg-gray-200 rounded"></div>
+              <div className="h-10 w-1/2 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -220,13 +250,13 @@ export default function TambahTransaksi() {
               Batal
             </Button>
 
-            {/* Tombol dengan AlertDialog */}
             <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
               <AlertDialogTrigger asChild>
                 <Button className="w-1/2" onClick={() => setOpenDialog(true)}>
                   {editingTransaction ? "Update Transaksi" : "Simpan Transaksi"}
                 </Button>
               </AlertDialogTrigger>
+
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Konfirmasi Simpan</AlertDialogTitle>

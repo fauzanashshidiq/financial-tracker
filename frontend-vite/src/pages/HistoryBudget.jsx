@@ -24,7 +24,6 @@ export default function HistoryPage() {
     setLoading(true);
     try {
       const res = await getRecommendationsByUser();
-      // ambil array recommendations dari response
       setHistory(
         (res.data?.recommendations || []).map((r) => ({
           ...r,
@@ -65,13 +64,29 @@ export default function HistoryPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">History Rekomendasi Budget</h1>
       </div>
-      {loading && <p>Loading...</p>}
+      {loading && (
+        <div className="space-y-4 animate-pulse">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="border rounded-xl p-4 bg-white shadow-sm">
+              <div className="h-5 w-48 bg-gray-200 rounded mb-4"></div>
+
+              <div className="h-4 w-full bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 w-2/3 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 w-1/3 bg-gray-200 rounded mb-4"></div>
+
+              <div className="flex justify-end">
+                <div className="h-8 w-20 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       {!loading && history.length === 0 && (
         <p className="text-gray-500">Belum ada riwayat rekomendasi.</p>
       )}
 
       <div className="space-y-2 border px-4">
-        <Accordion type="single" collapsible>
+        <Accordion type="multiple" collapsible>
           {history.map((item) => (
             <AccordionItem
               key={item.recommendation_id}

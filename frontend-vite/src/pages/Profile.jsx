@@ -71,8 +71,8 @@ export default function Profile() {
   if (!user) {
     return (
       <DashboardLayout>
-        <div className="flex justify-between items-center mt-2 mb-8 max-w-5xl mx-auto">
-          <h1 className="text-3xl font-bold text-center flex-1">Profile</h1>
+        <div className="flex justify-center items-center mt-2 mb-8 max-w-5xl mx-auto">
+          <div className="h-8 w-40 bg-gray-200 rounded mx-auto"></div>
         </div>
         <div className="max-w-3xl mx-auto bg-white p-8 rounded-2xl border animate-pulse">
           <div className="flex items-center gap-4">
@@ -102,7 +102,10 @@ export default function Profile() {
           {/* Avatar + name */}
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              <AvatarImage
+                src="https://github.com/evilrabbit.png"
+                alt="@shadcn"
+              />
               <AvatarFallback className="text-lg">
                 {user.name?.charAt(0)?.toUpperCase()}
               </AvatarFallback>
