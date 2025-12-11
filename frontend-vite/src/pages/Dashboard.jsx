@@ -17,6 +17,7 @@ import { PencilIcon } from "lucide-react";
 import DashboardChart from "@/components/DashboardChart";
 import { getCategories } from "@/services/categoryService";
 import DashboardTable from "@/components/DashboardTable";
+import { updateUser } from "@/services/authService";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -118,9 +119,32 @@ export default function Dashboard() {
     ? Math.min((totalExpense / totalAvailable) * 100, 100)
     : 0;
 
-  const handleSaveBalance = () => {
-    setUser({ ...user, balance: Number(newBalance) });
-    setOpenDialog(false);
+  const handleSaveBalance = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await updateUser(
+        user.id,
+        {
+          balance: Number(newBalance),
+        },
+        token
+      );
+
+      // Update state
+      const updated = {
+        ...user,
+        balance: Number(newBalance),
+      };
+
+      setUser(updated);
+      localStorage.setItem("user", JSON.stringify(updated));
+
+      setOpenDialog(false);
+    } catch (err) {
+      console.error(err);
+      alert("Gagal update balance");
+    }
   };
 
   return (
